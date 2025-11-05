@@ -152,22 +152,22 @@ function Home() {
         )}
         
         {/* Text Overlay with Animation - Above everything */}
-        <div className="relative text-center px-4 sm:px-6 lg:px-8 animate-fade-in" style={{ zIndex: 3 }}>
-          <div className="mb-4 lg:mb-6 flex justify-center">
+        <div className="relative text-center px-3 xs:px-4 sm:px-6 lg:px-8 animate-fade-in" style={{ zIndex: 3 }}>
+          <div className="mb-3 xs:mb-4 sm:mb-5 md:mb-6 lg:mb-6 flex justify-center">
             <img 
               src="/Logo/BOTSOVERKILL _ White _ Transparent.png" 
               alt="Bots Overkill" 
-              className="h-20 xs:h-24 sm:h-32 md:h-40 lg:h-48 xl:h-56 w-auto object-contain drop-shadow-2xl"
+              className="h-12 xs:h-16 sm:h-20 md:h-24 lg:h-28 xl:h-32 w-auto object-contain drop-shadow-2xl max-w-[90vw]"
             />
           </div>
-          <p className="text-sm xs:text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl text-gray-200 font-light max-w-3xl mx-auto drop-shadow-lg px-2">
-            Advanced Robotic Solutions for Every Environment
+          <p className="text-xs xs:text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-gray-200 font-light max-w-3xl mx-auto drop-shadow-lg px-2">
+          Built to last, made to explore
           </p>
           
           {/* Scroll Indicator */}
           <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce hidden sm:block" style={{ zIndex: 3 }}>
             <svg className="w-6 h-6 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+              {/* <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" /> */}
             </svg>
           </div>
         </div>

@@ -102,73 +102,73 @@ function Navbar() {
             : 'bg-black/50 backdrop-blur-lg'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 lg:h-20">
-            {/* Logo/Brand */}
+        <div className="w-full px-3 xs:px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-14 xs:h-16 sm:h-16 lg:h-20 w-full">
+            {/* Logo/Brand - Left Corner */}
             <Link
               to="/"
-              className="hover:opacity-80 transition-opacity duration-200 flex items-center"
+              className="hover:opacity-80 transition-opacity duration-200 flex items-center flex-shrink-0"
               onClick={closeMobileMenu}
             >
               <img 
                 src="/Logo/Bots Overkill _ White _ Transparent.png" 
                 alt="Bots Overkill" 
-                className="h-8 sm:h-10 lg:h-12 w-auto object-contain"
+                className="h-6 xs:h-7 sm:h-8 md:h-10 lg:h-12 w-auto object-contain"
               />
             </Link>
 
-            {/* Desktop Navigation Links */}
-            <div className="hidden md:flex items-center space-x-8 lg:space-x-12">
+            {/* Desktop Navigation Links - Right Corner */}
+            <div className="hidden md:flex items-center justify-end flex-1 space-x-4 sm:space-x-6 md:space-x-8 lg:space-x-10 xl:space-x-12">
               {location.pathname === '/' ? (
                 <>
                   <a
                     href="#products"
                     onClick={(e) => handleNavClick(e, '#products')}
-                    className="text-gray-300 hover:text-white transition-all duration-200 text-sm lg:text-base font-medium relative group"
+                    className="text-gray-300 hover:text-white transition-all duration-200 text-xs sm:text-sm md:text-sm lg:text-base font-medium relative group px-2 py-1"
                   >
                     Products
-                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white transition-all duration-200 group-hover:w-full"></span>
+                    <span className="absolute bottom-0 left-2 right-2 h-0.5 bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left"></span>
                   </a>
                   <a
                     href="#about"
                     onClick={(e) => handleNavClick(e, '#about')}
-                    className="text-gray-300 hover:text-white transition-all duration-200 text-sm lg:text-base font-medium relative group"
+                    className="text-gray-300 hover:text-white transition-all duration-200 text-xs sm:text-sm md:text-sm lg:text-base font-medium relative group px-2 py-1"
                   >
                     About
-                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white transition-all duration-200 group-hover:w-full"></span>
+                    <span className="absolute bottom-0 left-2 right-2 h-0.5 bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left"></span>
                   </a>
                 </>
               ) : (
                 <>
                   <Link
                     to="/#products"
-                    className="text-gray-300 hover:text-white transition-all duration-200 text-sm lg:text-base font-medium relative group"
+                    className="text-gray-300 hover:text-white transition-all duration-200 text-xs sm:text-sm md:text-sm lg:text-base font-medium relative group px-2 py-1"
                   >
                     Products
-                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white transition-all duration-200 group-hover:w-full"></span>
+                    <span className="absolute bottom-0 left-2 right-2 h-0.5 bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left"></span>
                   </Link>
                   <Link
                     to="/#about"
-                    className="text-gray-300 hover:text-white transition-all duration-200 text-sm lg:text-base font-medium relative group"
+                    className="text-gray-300 hover:text-white transition-all duration-200 text-xs sm:text-sm md:text-sm lg:text-base font-medium relative group px-2 py-1"
                   >
                     About
-                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white transition-all duration-200 group-hover:w-full"></span>
+                    <span className="absolute bottom-0 left-2 right-2 h-0.5 bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left"></span>
                   </Link>
                 </>
               )}
               <Link
                 to="/contact"
-                className="text-gray-300 hover:text-white transition-all duration-200 text-sm lg:text-base font-medium relative group"
+                className="text-gray-300 hover:text-white transition-all duration-200 text-xs sm:text-sm md:text-sm lg:text-base font-medium relative group px-2 py-1"
               >
                 Contact Us
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white transition-all duration-200 group-hover:w-full"></span>
+                <span className="absolute bottom-0 left-2 right-2 h-0.5 bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left"></span>
               </Link>
             </div>
 
-            {/* Mobile Menu Button */}
+            {/* Mobile Menu Button - Right Corner */}
             <button
               onClick={toggleMobileMenu}
-              className="md:hidden text-white p-2 hover:bg-white/10 rounded-lg transition-colors duration-200 z-[100] relative"
+              className="md:hidden text-white p-1.5 xs:p-2 hover:bg-white/10 rounded-lg transition-colors duration-200 z-[100] relative flex-shrink-0 ml-auto"
               aria-label="Toggle mobile menu"
             >
               <motion.div
@@ -176,9 +176,9 @@ function Navbar() {
                 transition={{ duration: 0.3 }}
               >
                 {isMobileMenuOpen ? (
-                  <FaTimes className="w-6 h-6" />
+                  <FaTimes className="w-5 h-5 xs:w-6 xs:h-6" />
                 ) : (
-                  <FaBars className="w-6 h-6" />
+                  <FaBars className="w-5 h-5 xs:w-6 xs:h-6" />
                 )}
               </motion.div>
             </button>

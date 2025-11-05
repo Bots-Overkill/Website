@@ -32,7 +32,7 @@ function ProductCard({ title, imageUrl, videoUrl }) {
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Visual Container with Image/Video */}
-      <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-gray-900 transition-all duration-500 ease-out group-hover:scale-[1.03] group-hover:shadow-2xl group-hover:shadow-white/10">
+      <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-gray-100 transition-all duration-500 ease-out group-hover:scale-[1.03] group-hover:shadow-2xl group-hover:shadow-black/20">
         {/* Image - shown by default */}
         <img
           src={imageUrl}
@@ -60,13 +60,13 @@ function ProductCard({ title, imageUrl, videoUrl }) {
         )}
         
         {/* Gradient Overlay on Hover */}
-        <div className={`absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent transition-opacity duration-500 ${
+        <div className={`absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent transition-opacity duration-500 ${
           isHovered ? 'opacity-100' : 'opacity-0'
         }`}></div>
       </div>
       
       {/* Product Title */}
-      <h3 className="mt-4 text-lg font-medium text-white text-center group-hover:text-gray-300 transition-colors duration-200">
+      <h3 className="mt-4 text-base sm:text-lg font-medium text-black text-center group-hover:text-gray-700 transition-colors duration-200">
         {title}
       </h3>
     </div>

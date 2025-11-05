@@ -35,7 +35,7 @@ function HorizontalProductGrid({ title, products }) {
           <div className="hidden lg:flex items-center space-x-2">
             <button
               onClick={() => scroll('left')}
-              className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all duration-200 hover:scale-110"
+              className="p-2 rounded-full bg-black/10 hover:bg-black/20 text-black transition-all duration-200 hover:scale-110"
               aria-label="Scroll left"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -44,7 +44,7 @@ function HorizontalProductGrid({ title, products }) {
             </button>
             <button
               onClick={() => scroll('right')}
-              className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all duration-200 hover:scale-110"
+              className="p-2 rounded-full bg-black/10 hover:bg-black/20 text-black transition-all duration-200 hover:scale-110"
               aria-label="Scroll right"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
