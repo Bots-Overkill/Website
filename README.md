@@ -2,16 +2,6 @@
 
 A premium, Apple-inspired React website showcasing underwater ROVs and robotic solutions. Market-ready with professional design, smooth animations, and fully responsive layout.
 
-## Features
-
-- 🎨 Dark mode theme with Apple-inspired design
-- 📹 Full-screen hero video background
-- 🎬 Hover-to-play video on product cards
-- 📱 Fully responsive design for all devices
-- ✨ Smooth animations and transitions
-- 🎯 Horizontal scrolling product grids
-- 🌊 Four product categories: Underwater, Surfacewater, Land, and Air
-
 ## Setup Instructions
 
 1. **Install dependencies:**
