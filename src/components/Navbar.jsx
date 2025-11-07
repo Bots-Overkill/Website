@@ -2,8 +2,8 @@ import { useState, useEffect, useRef } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FaBars, FaTimes } from 'react-icons/fa'
-import { productCategories } from '../data/products'
+import { FaBars, FaTimes, FaSearch, FaShoppingCart } from 'react-icons/fa'
+import { productCategories, getAllProducts } from '../data/products'
 
 /**
  * Professional Navbar Component
@@ -15,9 +15,13 @@ function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [hoveredCategory, setHoveredCategory] = useState(null)
   const [dropdownTimeout, setDropdownTimeout] = useState(null)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [searchResults, setSearchResults] = useState([])
   const location = useLocation()
   const mobileMenuRef = useRef(null)
   const dropdownRef = useRef(null)
+  const searchRef = useRef(null)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -26,6 +30,23 @@ function Navbar() {
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  // Search functionality
+  useEffect(() => {
+    if (searchQuery.trim()) {
+      const allProducts = getAllProducts()
+      const filtered = allProducts.filter(product => 
+        product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.category.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+      setSearchResults(filtered)
+      setIsSearchOpen(true)
+    } else {
+      setSearchResults([])
+      setIsSearchOpen(false)
+    }
+  }, [searchQuery])
 
   // Close mobile menu when clicking outside
   useEffect(() => {
@@ -47,6 +68,16 @@ function Navbar() {
       ) {
         setHoveredCategory(null)
       }
+
+      // Close search when clicking outside
+      if (
+        searchRef.current &&
+        !searchRef.current.contains(event.target) &&
+        !event.target.closest('[data-search-input]')
+      ) {
+        setIsSearchOpen(false)
+        setSearchQuery('')
+      }
     }
 
     // Prevent body scroll when mobile menu is open
@@ -61,7 +92,7 @@ function Navbar() {
       document.removeEventListener('mousedown', handleClickOutside)
       document.body.style.overflow = 'unset'
     }
-  }, [isMobileMenuOpen, hoveredCategory])
+  }, [isMobileMenuOpen, hoveredCategory, searchQuery])
 
   // Handle scroll to section on home page
   const handleNavClick = (e, target) => {
@@ -119,19 +150,7 @@ function Navbar() {
       href: cat.route,
       onClick: closeMobileMenu,
       isAnchor: false
-    })),
-    {
-      name: 'About',
-      href: '#about',
-      onClick: (e) => handleNavClick(e, '#about'),
-      isAnchor: true
-    },
-    {
-      name: 'Contact Us',
-      href: '/contact',
-      onClick: closeMobileMenu,
-      isAnchor: false
-    }
+    }))
   ]
 
   // Get the hovered category data
@@ -195,36 +214,77 @@ function Navbar() {
               </div>
             </div>
 
-            {/* Right Side Links - About & Contact */}
+            {/* Right Side Links - Search & Cart */}
             <div className="flex items-center space-x-4 sm:space-x-6 md:space-x-8 lg:space-x-10 xl:space-x-12 h-14 xs:h-16 sm:h-16 lg:h-20 flex-shrink-0 ml-auto">
-              {location.pathname === '/' ? (
-                <>
-                  <a
-                    href="#about"
-                    onClick={(e) => handleNavClick(e, '#about')}
-                    className="text-gray-300 hover:text-white transition-all duration-200 text-xs sm:text-sm md:text-sm lg:text-base font-medium relative group px-2 py-1"
-                  >
-                    About
-                    <span className="absolute bottom-0 left-2 right-2 h-0.5 bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left"></span>
-                  </a>
-                </>
-              ) : (
-                <>
-                  <Link
-                    to="/#about"
-                    className="text-gray-300 hover:text-white transition-all duration-200 text-xs sm:text-sm md:text-sm lg:text-base font-medium relative group px-2 py-1"
-                  >
-                    About
-                    <span className="absolute bottom-0 left-2 right-2 h-0.5 bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left"></span>
-                  </Link>
-                </>
-              )}
+              {/* Search Menu */}
+              <div className="relative" ref={searchRef}>
+                <div className="relative">
+                  <input
+                    type="text"
+                    data-search-input
+                    placeholder="Search products..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onFocus={() => searchQuery && setIsSearchOpen(true)}
+                    className="w-40 sm:w-48 md:w-56 px-4 py-2 pl-10 bg-black/50 border border-gray-700 rounded-lg text-white text-xs sm:text-sm placeholder-gray-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
+                  />
+                  <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                </div>
+
+                {/* Search Results Dropdown */}
+                <AnimatePresence>
+                  {isSearchOpen && searchResults.length > 0 && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute top-full left-0 mt-2 w-80 sm:w-96 bg-black/98 backdrop-blur-2xl border border-white/10 rounded-lg shadow-2xl z-50 max-h-96 overflow-y-auto"
+                    >
+                      <div className="p-2">
+                        {searchResults.map((product) => (
+                          <Link
+                            key={`${product.categoryId}-${product.id}`}
+                            to={`${product.categoryRoute}#${product.id}`}
+                            onClick={() => {
+                              setSearchQuery('')
+                              setIsSearchOpen(false)
+                            }}
+                            className="block p-3 hover:bg-white/5 rounded-lg transition-colors duration-200 group"
+                          >
+                            <div className="flex items-start gap-3">
+                              <img
+                                src={product.imageUrl}
+                                alt={product.title}
+                                className="w-12 h-12 object-cover rounded-md flex-shrink-0"
+                              />
+                              <div className="flex-1 min-w-0">
+                                <h4 className="text-sm font-medium text-white group-hover:text-gray-200 transition-colors">
+                                  {product.title}
+                                </h4>
+                                <p className="text-xs text-gray-400 mt-1 line-clamp-1">
+                                  {product.description}
+                                </p>
+                                <p className="text-xs text-gray-500 mt-1">
+                                  {product.category}
+                                </p>
+                              </div>
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Cart Icon */}
               <Link
-                to="/contact"
-                className="text-gray-300 hover:text-white transition-all duration-200 text-xs sm:text-sm md:text-sm lg:text-base font-medium relative group px-2 py-1"
+                to="/cart"
+                className="text-gray-300 hover:text-white transition-all duration-200 relative group"
+                aria-label="Shopping Cart"
               >
-                Contact Us
-                <span className="absolute bottom-0 left-2 right-2 h-0.5 bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left"></span>
+                <FaShoppingCart className="w-5 h-5 sm:w-6 sm:h-6" />
               </Link>
             </div>
           </div>
@@ -369,20 +429,72 @@ function Navbar() {
                   </ul>
                 </div>
 
-                {/* Bottom Section - Contact Button */}
-                <div className="absolute bottom-0 left-0 right-0 border-t border-neutral-800 p-6">
+                {/* Bottom Section - Search & Cart */}
+                <div className="absolute bottom-0 left-0 right-0 border-t border-neutral-800 p-6 space-y-3">
+                  {/* Mobile Search */}
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: 0.4 }}
                   >
-                    <Link to="/contact" onClick={closeMobileMenu}>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        placeholder="Search products..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full px-4 py-3 pl-10 bg-black/50 border border-gray-700 rounded-xl text-white text-sm placeholder-gray-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                      />
+                      <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    </div>
+                    {searchResults.length > 0 && (
+                      <div className="mt-2 max-h-64 overflow-y-auto space-y-1">
+                        {searchResults.map((product) => (
+                          <Link
+                            key={`${product.categoryId}-${product.id}`}
+                            to={`${product.categoryRoute}#${product.id}`}
+                            onClick={() => {
+                              setSearchQuery('')
+                              setIsSearchOpen(false)
+                              closeMobileMenu()
+                            }}
+                            className="block p-3 hover:bg-white/5 rounded-lg transition-colors"
+                          >
+                            <div className="flex items-center gap-3">
+                              <img
+                                src={product.imageUrl}
+                                alt={product.title}
+                                className="w-10 h-10 object-cover rounded-md"
+                              />
+                              <div className="flex-1 min-w-0">
+                                <h4 className="text-sm font-medium text-white">
+                                  {product.title}
+                                </h4>
+                                <p className="text-xs text-gray-400 line-clamp-1">
+                                  {product.category}
+                                </p>
+                              </div>
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </motion.div>
+
+                  {/* Mobile Cart */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: 0.5 }}
+                  >
+                    <Link to="/cart" onClick={closeMobileMenu}>
                       <motion.div
-                        className="bg-white text-black px-6 py-3 shadow-lg rounded-xl text-center font-semibold hover:bg-gray-100 transition-all duration-300"
+                        className="bg-white text-black px-6 py-3 shadow-lg rounded-xl text-center font-semibold hover:bg-gray-100 transition-all duration-300 flex items-center justify-center gap-2"
                         whileHover={{ scale: 1.05, y: -2 }}
                         whileTap={{ scale: 0.95 }}
                       >
-                        Contact Us
+                        <FaShoppingCart className="w-5 h-5" />
+                        <span>Cart</span>
                       </motion.div>
                     </Link>
                   </motion.div>

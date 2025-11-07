@@ -49,7 +49,7 @@ export const productCategories = [
   },
   {
     id: 'surfacewater',
-    title: 'Surface Water',
+    title: 'SurfaceWater',
     route: '/surfacewater',
     description: 'Navigate surface waters with precision and efficiency',
     products: [

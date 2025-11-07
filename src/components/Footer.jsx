@@ -46,7 +46,9 @@ function Footer() {
 
           {/* Contact Info */}
           <div className="space-y-4">
-            <h4 className="text-lg font-semibold text-white">Contact</h4>
+          <Link to="/contact" className="inline-block px-4 py-2 bg-white text-black hover:bg-gray-100 transition-colors duration-200 text-sm font-medium rounded-md">
+                  Contact Us
+                </Link>
             <ul className="space-y-3 text-gray-400 text-sm">
               <li>akhilbarackal@botsoverkill.com</li>
               <li>+91 94473 60345</li>
