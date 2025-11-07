@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react'
-import HorizontalProductGrid from '../components/HorizontalProductGrid'
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { productCategories as allCategories } from '../data/products'
 
 /**
  * Home Page Component
@@ -7,120 +8,14 @@ import HorizontalProductGrid from '../components/HorizontalProductGrid'
  */
 function Home() {
   const [isVideoLoaded, setIsVideoLoaded] = useState(false)
+  const navigate = useNavigate()
 
-  // Product data organized by category
-  const productCategories = [
-    {
-      title: 'Underwater',
-      products: [
-        {
-          title: 'Alpha',
-          imageUrl: '/Underwater/Alpha-1536x864.png',
-          videoUrl: '/home.mp4' // Using home.mp4 as placeholder video for Alpha
-        },
-        {
-          title: 'ROV',
-          imageUrl: '/Underwater/ROV-1536x864.png',
-          videoUrl:  '/home.mp4' // Using home.mp4 as placeholder video for Alpha
-        },
-        {
-          title: 'Luna',
-          imageUrl: '/Underwater/Luna-1536x864.png',
-          videoUrl:  '/home.mp4' // Using home.mp4 as placeholder video for Alpha
-        },
-        {
-          title: 'ARVi',
-          imageUrl: '/Underwater/ARVi-2023-version-web-materials-e1691747311126-1536x855.png',
-          videoUrl:  '/home.mp4' // Using home.mp4 as placeholder video for Alpha
-        },
-        {
-          title: 'Boxfish AUV',
-          imageUrl: '/Underwater/Boxfsih-AUV-4K-camera-head-left-1536x1152.png',
-          videoUrl:  '/home.mp4' // Using home.mp4 as placeholder video for Alpha
-        }
-      ]
-    },
-    {
-      title: 'Surfacewater',
-      products: [
-        {
-          title: 'APACHE4 USV',
-          imageUrl: '/Surfacewater/APACHE4-USV-for-ADCP-surveys-1-e1648122399229.png',
-          videoUrl:  '/home.mp4' // Using home.mp4 as placeholder video for Alpha
-        },
-        {
-          title: 'Mariner X USV',
-          imageUrl: '/Surfacewater/the-mariner-x-usv.webp',
-          videoUrl:  '/home.mp4' // Using home.mp4 as placeholder video for Alpha
-        },
-        {
-          title: 'Tactical AMY USV',
-          imageUrl: '/Surfacewater/Tactical-AMY-USV.webp',
-          videoUrl:  '/home.mp4' // Using home.mp4 as placeholder video for Alpha
-        },
-        {
-          title: 'Hound Reckless USV',
-          imageUrl: '/Surfacewater/Hound-Reckless-usv.webp',
-          videoUrl:  '/home.mp4' // Using home.mp4 as placeholder video for Alpha
-        }
-      ]
-    },
-    {
-      title: 'Land',
-      products: [
-        {
-          title: 'Husky A300',
-          imageUrl: '/Land/HuskyA300_Menu_Image.png',
-          videoUrl:  '/home.mp4' // Using home.mp4 as placeholder video for Alpha
-        },
-        {
-          title: 'Warthog',
-          imageUrl: '/Land/warthog-menu.jpg',
-          videoUrl:  '/home.mp4' // Using home.mp4 as placeholder video for Alpha
-        },
-        {
-          title: 'Dingo',
-          imageUrl: '/Land/dingo-menu-1.png',
-          videoUrl:  '/home.mp4' // Using home.mp4 as placeholder video for Alpha
-        },
-        {
-          title: 'Jackal',
-          imageUrl: '/Land/jackal.jpg',
-          videoUrl:  '/home.mp4' // Using home.mp4 as placeholder video for Alpha
-        }
-      ]
-    },
-    {
-      title: 'Air',
-      products: [
-        {
-          title: 'Aerial Platform 1',
-          imageUrl: '/Air/6e82e273e1d05044bc6f02a278df51eb.png',
-          videoUrl:  '/home.mp4' // Using home.mp4 as placeholder video for Alpha
-        },
-        {
-          title: 'Aerial Platform 2',
-          imageUrl: '/Air/133dbcbded142391e8ed57d0fcd57ac8.png',
-          videoUrl:  '/home.mp4' // Using home.mp4 as placeholder video for Alpha
-        },
-        {
-          title: 'Aerial Platform 3',
-          imageUrl: '/Air/ae5d8b9987be8d5ecdeb5d502a1e887c.png',
-          videoUrl:  '/home.mp4' // Using home.mp4 as placeholder video for Alpha
-        },
-        {
-          title: 'Aerial Platform 4',
-          imageUrl: '/Air/979ab68fd602bd3440fc4fb12f3ea38e.png',
-          videoUrl:  '/home.mp4' // Using home.mp4 as placeholder video for Alpha
-        },
-        {
-          title: 'Aerial Platform 5',
-          imageUrl: '/Air/3be8aaab8409e1575c6363658007b517.png',
-          videoUrl:  '/home.mp4' // Using home.mp4 as placeholder video for Alpha
-        }
-      ]
-    }
-  ]
+  // Get first product from each category for the 4-card grid
+  const featuredProducts = allCategories.map(category => ({
+    categoryTitle: category.title,
+    categoryRoute: category.route,
+    product: category.products[0] || null
+  })).filter(item => item.product !== null)
 
   return (
     <div className="min-h-screen bg-black">
@@ -164,24 +59,117 @@ function Home() {
           Built to last, made to explore
           </p>
           
-          {/* Scroll Indicator */}
-          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce hidden sm:block" style={{ zIndex: 3 }}>
-            <svg className="w-6 h-6 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              {/* <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" /> */}
-            </svg>
-          </div>
         </div>
       </section>
 
-      {/* Products Section */}
-      <section id="products" className="bg-black">
-        {productCategories.map((category, index) => (
-          <HorizontalProductGrid
-            key={index}
-            title={category.title}
-            products={category.products}
-          />
-        ))}
+      {/* Products Section - 4 Card Grid */}
+      <section id="products" className="homepage-section collection-module w-full bg-white" data-module-template="promos" data-analytics-region="promo">
+        <div className="grid grid-cols-1 md:grid-cols-2 w-full gap-6 md:gap-8 lg:gap-10 py-6 md:py-8 lg:py-10 px-4 md:px-6 lg:px-8">
+          {featuredProducts.slice(0, 4).map((item, index) => {
+            const { categoryTitle, categoryRoute, product } = item
+
+            // Category-specific theme colors
+            const categoryColors = {
+              0: { // Underwater - Dark Blue
+                bg: '#1e3a5f',
+                text: 'text-white',
+                subtext: 'text-gray-200',
+                primaryBtn: 'bg-white text-[#1e3a5f] hover:bg-gray-100',
+                secondaryBtn: 'border-2 border-white text-white hover:bg-white/10'
+              },
+              1: { // Surface Water - Light Blue
+                bg: '#e6f3ff',
+                text: 'text-[#1e3a5f]',
+                subtext: 'text-[#2d4a6b]',
+                primaryBtn: 'bg-[#0066cc] text-white hover:bg-[#0052a3]',
+                secondaryBtn: 'border-2 border-[#0066cc] text-[#0066cc] hover:bg-[#0066cc]/10'
+              },
+              2: { // Land - Yellow/Brownish
+                bg: '#f4e4bc',
+                text: 'text-[#5c4a2a]',
+                subtext: 'text-[#6b5638]',
+                primaryBtn: 'bg-[#8b6914] text-white hover:bg-[#6d520f]',
+                secondaryBtn: 'border-2 border-[#8b6914] text-[#8b6914] hover:bg-[#8b6914]/10'
+              },
+              3: { // Air - Gray
+                bg: '#e5e7eb',
+                text: 'text-gray-900',
+                subtext: 'text-gray-700',
+                primaryBtn: 'bg-gray-900 text-white hover:bg-gray-800',
+                secondaryBtn: 'border-2 border-gray-900 text-gray-900 hover:bg-gray-900/10'
+              }
+            }
+
+            const colors = categoryColors[index] || categoryColors[0]
+
+            return (
+              <div
+                key={index}
+                onClick={() => navigate(categoryRoute)}
+                data-unit-id={product.id}
+                data-analytics-section-engagement={`name:promo-${product.id}`}
+                className="product-card relative overflow-hidden flex flex-col items-center justify-center min-h-[700px] sm:min-h-[800px] md:min-h-[900px] lg:min-h-[1000px] hover:opacity-95 transition-opacity duration-300 cursor-pointer shadow-lg"
+                style={{ backgroundColor: colors.bg }}
+              >
+                <div className="module-content h-full w-full max-w-[900px] mx-auto flex flex-col items-center justify-center px-6 py-12 sm:px-8 sm:py-16 md:px-10 md:py-20 lg:px-12 lg:py-24">
+                  <div className="unit-wrapper relative h-full w-full flex flex-col items-center text-center">
+                    
+                    {/* Text Section - Top */}
+                    <div className="unit-copy-wrapper w-full mb-8 sm:mb-10 md:mb-12 lg:mb-16">
+                      <h3 className={`headline ${colors.text} text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-3 sm:mb-4 leading-tight`}>
+                        {categoryTitle}
+                      </h3>
+                      <p className={`subhead ${colors.subtext} text-base sm:text-lg md:text-xl lg:text-2xl leading-relaxed`}>
+                        {product.description}
+                      </p>
+                    </div>
+
+                    {/* Button Row - Reduced gap for Land and Air */}
+                    <div 
+                      className={`cta-links flex flex-wrap justify-center gap-4 sm:gap-5 ${index === 2 || index === 3 ? 'mb-4 sm:mb-6 md:mb-8 lg:mb-10' : 'mb-12 sm:mb-16 md:mb-20 lg:mb-24'}`}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <Link
+                        to={categoryRoute}
+                        className={`button button-primary px-6 py-3 sm:px-7 sm:py-3.5 md:px-8 md:py-4 lg:px-10 lg:py-5 ${colors.primaryBtn} rounded-full font-medium transition-colors text-sm sm:text-base md:text-lg lg:text-xl inline-block`}
+                        data-analytics-region="learn more"
+                        data-analytics-title={`learn more - ${product.id}`}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        Learn more
+                      </Link>
+                      <Link
+                        to="/contact"
+                        className={`button button-tertiary px-6 py-3 sm:px-7 sm:py-3.5 md:px-8 md:py-4 lg:px-10 lg:py-5 ${colors.secondaryBtn} rounded-full font-medium transition-colors text-sm sm:text-base md:text-lg lg:text-xl inline-block`}
+                        data-analytics-region="buy"
+                        data-analytics-title={`buy - ${product.id}`}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        Buy now
+                      </Link>
+                    </div>
+
+                    {/* Image Section - Bottom */}
+                    <div className="unit-image-wrapper relative w-full flex-1 flex items-center justify-center mt-auto">
+                      <figure
+                        className="unit-image w-full max-w-[500px] sm:max-w-[600px] md:max-w-[700px] lg:max-w-[800px] flex items-center justify-center"
+                        role="img"
+                        aria-label={`${product.title}, ${product.description}`}
+                      >
+                        <img
+                          src={product.imageUrl}
+                          alt={product.title}
+                          className="w-full h-auto object-contain"
+                          loading="lazy"
+                        />
+                      </figure>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )
+          })}
+        </div>
       </section>
 
       {/* About Section Placeholder */}

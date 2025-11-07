@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { FaEnvelope, FaWhatsapp } from "react-icons/fa";
 import { useForm, ValidationError } from '@formspree/react';
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 const ContactUs = () => {
   const [state, handleSubmit] = useForm("xrbygvqk"); // Replace with your Formspree form ID
@@ -153,8 +154,9 @@ const ContactUs = () => {
   }
 
   return (
+    <>
+    <Navbar />
     <section className="pt-2 bg-black min-h-screen">
-      <Navbar />
       
       <div className="container mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 text-white">
         {/* Contact Form Section */}
@@ -422,6 +424,8 @@ const ContactUs = () => {
         }
       `}</style>
     </section>
+    <Footer />
+    </>
   );
 };
 

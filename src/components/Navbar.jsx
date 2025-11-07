@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaBars, FaTimes } from 'react-icons/fa'
+import { productCategories } from '../data/products'
 
 /**
  * Professional Navbar Component
@@ -12,8 +13,11 @@ import { FaBars, FaTimes } from 'react-icons/fa'
 function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [hoveredCategory, setHoveredCategory] = useState(null)
+  const [dropdownTimeout, setDropdownTimeout] = useState(null)
   const location = useLocation()
   const mobileMenuRef = useRef(null)
+  const dropdownRef = useRef(null)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -33,6 +37,16 @@ function Navbar() {
       ) {
         setIsMobileMenuOpen(false)
       }
+      
+      // Close dropdown when clicking outside
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target) &&
+        hoveredCategory &&
+        !event.target.closest('[data-category-item]')
+      ) {
+        setHoveredCategory(null)
+      }
     }
 
     // Prevent body scroll when mobile menu is open
@@ -47,7 +61,7 @@ function Navbar() {
       document.removeEventListener('mousedown', handleClickOutside)
       document.body.style.overflow = 'unset'
     }
-  }, [isMobileMenuOpen])
+  }, [isMobileMenuOpen, hoveredCategory])
 
   // Handle scroll to section on home page
   const handleNavClick = (e, target) => {
@@ -71,14 +85,41 @@ function Navbar() {
     setIsMobileMenuOpen(false)
   }
 
+  // Handle dropdown hover with delay for smoother UX
+  const handleCategoryEnter = (categoryId) => {
+    if (dropdownTimeout) {
+      clearTimeout(dropdownTimeout)
+      setDropdownTimeout(null)
+    }
+    setHoveredCategory(categoryId)
+  }
+
+  const handleCategoryLeave = () => {
+    const timeout = setTimeout(() => {
+      setHoveredCategory(null)
+    }, 150) // Small delay to allow moving to dropdown
+    setDropdownTimeout(timeout)
+  }
+
+  const handleDropdownEnter = () => {
+    if (dropdownTimeout) {
+      clearTimeout(dropdownTimeout)
+      setDropdownTimeout(null)
+    }
+  }
+
+  const handleDropdownLeave = () => {
+    setHoveredCategory(null)
+  }
+
   // Mobile menu items
   const mobileMenuItems = [
-    {
-      name: 'Products',
-      href: '#products',
-      onClick: (e) => handleNavClick(e, '#products'),
-      isAnchor: true
-    },
+    ...productCategories.map(cat => ({
+      name: cat.title,
+      href: cat.route,
+      onClick: closeMobileMenu,
+      isAnchor: false
+    })),
     {
       name: 'About',
       href: '#about',
@@ -93,6 +134,9 @@ function Navbar() {
     }
   ]
 
+  // Get the hovered category data
+  const hoveredCategoryData = productCategories.find(cat => cat.id === hoveredCategory)
+
   return (
     <>
       <nav
@@ -103,32 +147,58 @@ function Navbar() {
         }`}
       >
         <div className="w-full px-3 xs:px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-14 xs:h-16 sm:h-16 lg:h-20 w-full">
-            {/* Logo/Brand - Left Corner */}
-            <Link
-              to="/"
-              className="hover:opacity-80 transition-opacity duration-200 flex items-center flex-shrink-0"
-              onClick={closeMobileMenu}
-            >
-              <img 
-                src="/Logo/Bots Overkill _ White _ Transparent.png" 
-                alt="Bots Overkill" 
-                className="h-6 xs:h-7 sm:h-8 md:h-10 lg:h-12 w-auto object-contain"
-              />
-            </Link>
+          {/* Desktop Layout - Logo on elevated ledge with diagonal divider */}
+          <div className="hidden md:flex items-start w-full relative">
+            {/* Logo Section - Elevated on Left */}
+            <div className="relative flex-shrink-0 pt-2 xs:pt-3 sm:pt-4">
+              <Link
+                to="/"
+                className="hover:opacity-80 transition-opacity duration-200 flex items-center relative z-10"
+                onClick={closeMobileMenu}
+              >
+                <img 
+                  src="/Logo/Bots Overkill _ White _ Transparent.png" 
+                  alt="Bots Overkill" 
+                  className="h-8 sm:h-10 md:h-12 lg:h-14 w-auto object-contain"
+                />
+              </Link>
+              
+             
+            </div>
 
-            {/* Desktop Navigation Links - Right Corner */}
-            <div className="hidden md:flex items-center justify-end flex-1 space-x-4 sm:space-x-6 md:space-x-8 lg:space-x-10 xl:space-x-12">
+            {/* Navigation Links Bar - Horizontal with centered product categories */}
+            <div className="flex-1 flex items-center h-14 xs:h-16 sm:h-16 lg:h-20 relative">
+              {/* Product Categories - Absolutely centered in viewport with dropdowns */}
+              <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center space-x-4 sm:space-x-6 md:space-x-8 lg:space-x-10 xl:space-x-12">
+                {productCategories.map((category) => (
+                  <div
+                    key={category.id}
+                    className="relative"
+                    data-category-item
+                    onMouseEnter={() => handleCategoryEnter(category.id)}
+                    onMouseLeave={handleCategoryLeave}
+                  >
+                    <Link
+                      to={category.route}
+                      className={`text-gray-300 hover:text-white transition-all duration-200 text-xs sm:text-sm md:text-sm lg:text-base font-medium relative group px-2 py-1 block ${
+                        hoveredCategory === category.id ? 'text-white' : ''
+                      }`}
+                    >
+                      {category.title}
+                      <span className={`absolute bottom-0 left-2 right-2 h-0.5 bg-white transition-transform duration-200 origin-left ${
+                        hoveredCategory === category.id ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+                      }`}></span>
+                    </Link>
+
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right Side Links - About & Contact */}
+            <div className="flex items-center space-x-4 sm:space-x-6 md:space-x-8 lg:space-x-10 xl:space-x-12 h-14 xs:h-16 sm:h-16 lg:h-20 flex-shrink-0 ml-auto">
               {location.pathname === '/' ? (
                 <>
-                  <a
-                    href="#products"
-                    onClick={(e) => handleNavClick(e, '#products')}
-                    className="text-gray-300 hover:text-white transition-all duration-200 text-xs sm:text-sm md:text-sm lg:text-base font-medium relative group px-2 py-1"
-                  >
-                    Products
-                    <span className="absolute bottom-0 left-2 right-2 h-0.5 bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left"></span>
-                  </a>
                   <a
                     href="#about"
                     onClick={(e) => handleNavClick(e, '#about')}
@@ -140,13 +210,6 @@ function Navbar() {
                 </>
               ) : (
                 <>
-                  <Link
-                    to="/#products"
-                    className="text-gray-300 hover:text-white transition-all duration-200 text-xs sm:text-sm md:text-sm lg:text-base font-medium relative group px-2 py-1"
-                  >
-                    Products
-                    <span className="absolute bottom-0 left-2 right-2 h-0.5 bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left"></span>
-                  </Link>
                   <Link
                     to="/#about"
                     className="text-gray-300 hover:text-white transition-all duration-200 text-xs sm:text-sm md:text-sm lg:text-base font-medium relative group px-2 py-1"
@@ -164,6 +227,22 @@ function Navbar() {
                 <span className="absolute bottom-0 left-2 right-2 h-0.5 bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left"></span>
               </Link>
             </div>
+          </div>
+
+          {/* Mobile Layout - Simplified */}
+          <div className="md:hidden flex items-center justify-between h-14 xs:h-16 sm:h-16 w-full">
+            {/* Logo/Brand - Left Corner */}
+            <Link
+              to="/"
+              className="hover:opacity-80 transition-opacity duration-200 flex items-center flex-shrink-0"
+              onClick={closeMobileMenu}
+            >
+              <img 
+                src="/Logo/Bots Overkill _ White _ Transparent.png" 
+                alt="Bots Overkill" 
+                className="h-6 xs:h-7 sm:h-8 md:h-10 lg:h-12 w-auto object-contain"
+              />
+            </Link>
 
             {/* Mobile Menu Button - Right Corner */}
             <button
@@ -314,6 +393,74 @@ function Navbar() {
         </AnimatePresence>,
         document.body
       )}
+
+      {/* Full-Width Dropdown Menu - Apple Style */}
+      <AnimatePresence>
+        {hoveredCategory && hoveredCategoryData && (
+          <motion.div
+            ref={dropdownRef}
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            onMouseEnter={handleDropdownEnter}
+            onMouseLeave={handleDropdownLeave}
+            className="fixed top-[72px] md:top-[80px] left-0 right-0 bg-black/98 backdrop-blur-2xl border-t border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.7)] z-40 hidden md:block"
+          >
+            <div className="max-w-7xl mx-auto px-8 lg:px-12 py-20">
+              {/* Category Title - Apple Style */}
+              <div className="mb-16 text-center">
+                <h2 className="text-4xl font-semibold text-white mb-4 tracking-tight">
+                  {hoveredCategoryData.title}
+                </h2>
+                {/* <p className="text-gray-400 text-lg leading-relaxed max-w-2xl mx-auto">
+                  {hoveredCategoryData.description}
+                </p> */}
+              </div>
+
+              {/* Products Grid - Apple Style - All Products Displayed */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-10 lg:gap-12">
+                {hoveredCategoryData.products.map((product, index) => (
+                  <motion.div
+                    key={product.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.25, delay: index * 0.03 }}
+                  >
+                    <Link
+                      to={`${hoveredCategoryData.route}#${product.id}`}
+                      className="group block"
+                      onClick={() => setHoveredCategory(null)}
+                    >
+                      <div className="space-y-3">
+                        {/* Product Image - Apple Style */}
+                        <div className="relative aspect-square rounded-xl overflow-hidden bg-gray-900/50 group-hover:scale-[1.02] transition-all duration-300 ease-out">
+                          <img
+                            src={product.imageUrl}
+                            alt={product.title}
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        </div>
+
+                        {/* Product Info - Clean Typography */}
+                        <div className="space-y-0.5">
+                          <h3 className="text-base font-medium text-white group-hover:text-gray-200 transition-colors leading-tight">
+                            {product.title}
+                          </h3>
+                          <p className="text-xs text-gray-400 leading-relaxed line-clamp-2">
+                            {product.description}
+                          </p>
+                        </div>
+                      </div>
+                    </Link>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   )
 }
