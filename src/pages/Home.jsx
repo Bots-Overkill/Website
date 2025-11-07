@@ -52,17 +52,17 @@ function Home() {
 
       {/* Products Section - 4 Card Grid */}
       <section id="products" className="homepage-section collection-module w-full bg-white" data-module-template="promos" data-analytics-region="promo">
-        <div className="grid grid-cols-1 sm:grid-cols-2 w-full gap-3 sm:gap-4 md:gap-5 lg:gap-6 p-3 sm:p-4 md:p-5 lg:p-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 w-full gap-2 sm:gap-2 md:gap-2 lg:gap-2 p-2 sm:p-2 md:p-2 lg:p-2">
           {featuredProducts.slice(0, 4).map((item, index) => {
             const { categoryTitle, categoryRoute, product } = item
 
             // Category-specific theme colors
             const categoryColors = {
-              0: { // Underwater - Dark Blue
-                bg: '#1e3a5f',
+              0: { // Underwater - Cyan Blue
+                bg: '#1FA8D0',
                 text: 'text-white',
                 subtext: 'text-gray-200',
-                primaryBtn: 'bg-white text-[#1e3a5f] hover:bg-gray-100',
+                primaryBtn: 'bg-white text-[#1FA8D0] hover:bg-gray-100',
                 secondaryBtn: 'border-2 border-white text-white hover:bg-white/10'
               },
               1: { // Surface Water - Light Blue

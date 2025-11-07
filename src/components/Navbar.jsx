@@ -17,6 +17,7 @@ function Navbar() {
   const [dropdownTimeout, setDropdownTimeout] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false)
   const [searchResults, setSearchResults] = useState([])
   const location = useLocation()
   const mobileMenuRef = useRef(null)
@@ -48,6 +49,16 @@ function Navbar() {
     }
   }, [searchQuery])
 
+  const handleSearchClick = () => {
+    setIsSearchExpanded(true)
+  }
+
+  const handleSearchBlur = () => {
+    if (!searchQuery.trim()) {
+      setIsSearchExpanded(false)
+    }
+  }
+
   // Close mobile menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -76,7 +87,9 @@ function Navbar() {
         !event.target.closest('[data-search-input]')
       ) {
         setIsSearchOpen(false)
-        setSearchQuery('')
+        if (!searchQuery.trim()) {
+          setIsSearchExpanded(false)
+        }
       }
     }
 
@@ -166,10 +179,10 @@ function Navbar() {
         }`}
       >
         <div className="w-full px-3 xs:px-4 sm:px-6 lg:px-8">
-          {/* Desktop Layout - Logo on elevated ledge with diagonal divider */}
-          <div className="hidden md:flex items-start w-full relative">
-            {/* Logo Section - Elevated on Left */}
-            <div className="relative flex-shrink-0 pt-2 xs:pt-3 sm:pt-4">
+          {/* Desktop Layout - Centered Navigation */}
+          <div className="hidden md:flex items-center justify-center w-full relative h-14 xs:h-16 sm:h-16 lg:h-20">
+            {/* Logo Section - Left */}
+            <div className="absolute left-0 flex-shrink-0 pt-2 xs:pt-3 sm:pt-4">
               <Link
                 to="/"
                 className="hover:opacity-80 transition-opacity duration-200 flex items-center relative z-10"
@@ -181,55 +194,88 @@ function Navbar() {
                   className="h-8 sm:h-10 md:h-12 lg:h-14 w-auto object-contain"
                 />
               </Link>
-              
-             
             </div>
 
-            {/* Navigation Links Bar - Horizontal with centered product categories */}
-            <div className="flex-1 flex items-center h-14 xs:h-16 sm:h-16 lg:h-20 relative">
-              {/* Product Categories - Absolutely centered in viewport with dropdowns */}
-              <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center space-x-4 sm:space-x-6 md:space-x-8 lg:space-x-10 xl:space-x-12">
-                {productCategories.map((category) => (
-                  <div
-                    key={category.id}
-                    className="relative"
-                    data-category-item
-                    onMouseEnter={() => handleCategoryEnter(category.id)}
-                    onMouseLeave={handleCategoryLeave}
-                  >
-                    <Link
-                      to={category.route}
-                      className={`text-gray-300 hover:text-white transition-all duration-200 text-xs sm:text-sm md:text-sm lg:text-base font-medium relative group px-2 py-1 block ${
-                        hoveredCategory === category.id ? 'text-white' : ''
-                      }`}
+            {/* Navigation Links Bar - Centered Product Categories */}
+            <div className="flex items-center justify-center h-full">
+              {/* Product Categories - Centered with dropdowns */}
+              <div className="flex items-center space-x-4 sm:space-x-6 md:space-x-8 lg:space-x-10 xl:space-x-8">
+                {productCategories.map((category) => {
+                  const isActive = location.pathname === category.route
+                  return (
+                    <div
+                      key={category.id}
+                      className="relative"
+                      data-category-item
+                      onMouseEnter={() => handleCategoryEnter(category.id)}
+                      onMouseLeave={handleCategoryLeave}
                     >
-                      {category.title}
-                      <span className={`absolute bottom-0 left-2 right-2 h-0.5 bg-white transition-transform duration-200 origin-left ${
-                        hoveredCategory === category.id ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
-                      }`}></span>
-                    </Link>
-
-                  </div>
-                ))}
+                      <Link
+                        to={category.route}
+                        className={`text-gray-300 hover:text-white transition-all duration-200 text-xs sm:text-sm md:text-sm lg:text-base font-medium relative group px-3 py-1.5 block rounded-lg ${
+                          hoveredCategory === category.id ? 'text-white' : ''
+                        } ${isActive ? 'bg-white/10' : ''}`}
+                      >
+                        {category.title}
+                        <span className={`absolute bottom-0 left-3 right-3 h-0.5 bg-white transition-transform duration-200 origin-left ${
+                          hoveredCategory === category.id ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+                        }`}></span>
+                      </Link>
+                    </div>
+                  )
+                })}
               </div>
             </div>
 
             {/* Right Side Links - Search & Cart */}
-            <div className="flex items-center space-x-4 sm:space-x-6 md:space-x-8 lg:space-x-10 xl:space-x-12 h-14 xs:h-16 sm:h-16 lg:h-20 flex-shrink-0 ml-auto">
-              {/* Search Menu */}
+            <div className="absolute right-0 flex items-center space-x-4 sm:space-x-6 md:space-x-8 lg:space-x-10 xl:space-x-12 h-full flex-shrink-0">
+              {/* Search Menu - Icon Only, Expands on Click */}
               <div className="relative" ref={searchRef}>
-                <div className="relative">
-                  <input
-                    type="text"
-                    data-search-input
-                    placeholder="Search products..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onFocus={() => searchQuery && setIsSearchOpen(true)}
-                    className="w-40 sm:w-48 md:w-56 px-4 py-2 pl-10 bg-black/50 border border-gray-700 rounded-lg text-white text-xs sm:text-sm placeholder-gray-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
-                  />
-                  <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                </div>
+                <motion.div 
+                  className="relative"
+                  initial={false}
+                  animate={{ 
+                    width: isSearchExpanded ? '240px' : '40px',
+                  }}
+                  transition={{ duration: 0.3, ease: 'easeInOut' }}
+                >
+                  {!isSearchExpanded ? (
+                    <button
+                      onClick={handleSearchClick}
+                      className="w-10 h-10 flex items-center justify-center text-gray-300 hover:text-white transition-colors duration-200 rounded-lg hover:bg-white/10"
+                      aria-label="Search"
+                    >
+                      <FaSearch className="w-5 h-5" />
+                    </button>
+                  ) : (
+                    <div className="relative">
+                      <input
+                        type="text"
+                        data-search-input
+                        // placeholder="Search products..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onFocus={() => searchQuery && setIsSearchOpen(true)}
+                        onBlur={handleSearchBlur}
+                        autoFocus
+                        className="w-full px-4 py-2 pl-10 pr-10 bg-black/50 border border-gray-700 rounded-lg text-white text-xs sm:text-sm placeholder-gray-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
+                      />
+                      <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                      {searchQuery && (
+                        <button
+                          onClick={() => {
+                            setSearchQuery('')
+                            setIsSearchExpanded(false)
+                            setIsSearchOpen(false)
+                          }}
+                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                        >
+                          <FaTimes className="w-3 h-3" />
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </motion.div>
 
                 {/* Search Results Dropdown */}
                 <AnimatePresence>
@@ -249,6 +295,7 @@ function Navbar() {
                             onClick={() => {
                               setSearchQuery('')
                               setIsSearchOpen(false)
+                              setIsSearchExpanded(false)
                             }}
                             className="block p-3 hover:bg-white/5 rounded-lg transition-colors duration-200 group"
                           >
@@ -380,52 +427,55 @@ function Navbar() {
                 {/* Menu Items */}
                 <div className="px-4 py-6">
                   <ul className="space-y-2">
-                    {mobileMenuItems.map((item, index) => (
-                      <motion.li
-                        key={item.name}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.3, delay: index * 0.1 + 0.2 }}
-                      >
-                        {item.isAnchor && location.pathname === '/' ? (
-                          <a
-                            href={item.href}
-                            onClick={item.onClick}
-                            className="flex items-center p-4 hover:bg-white/5 rounded-xl cursor-pointer transition-all duration-300 group"
-                          >
-                            <motion.span
-                              className="text-white text-base font-medium group-hover:text-gray-300 transition-colors duration-300"
-                              whileHover={{ x: 5 }}
-                              transition={{
-                                type: 'spring',
-                                stiffness: 400,
-                                damping: 10
-                              }}
+                    {mobileMenuItems.map((item, index) => {
+                      const isActive = !item.isAnchor && location.pathname === item.href
+                      return (
+                        <motion.li
+                          key={item.name}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ duration: 0.3, delay: index * 0.1 + 0.2 }}
+                        >
+                          {item.isAnchor && location.pathname === '/' ? (
+                            <a
+                              href={item.href}
+                              onClick={item.onClick}
+                              className={`flex items-center p-4 hover:bg-white/5 rounded-xl cursor-pointer transition-all duration-300 group ${isActive ? 'bg-white/10' : ''}`}
                             >
-                              {item.name}
-                            </motion.span>
-                          </a>
-                        ) : (
-                          <Link
-                            to={item.isAnchor ? '/' + item.href : item.href}
-                            onClick={item.onClick}
-                            className="flex items-center p-4 hover:bg-white/5 rounded-xl cursor-pointer transition-all duration-300 group"
-                          >
-                            <motion.span
-                              className="text-white text-base font-medium group-hover:text-gray-300 transition-colors duration-300"
-                              whileHover={{ x: 5 }}
-                              transition={{
-                                type: 'spring',
-                                stiffness: 400,
-                                damping: 10
-                              }}
+                              <motion.span
+                                className="text-white text-base font-medium group-hover:text-gray-300 transition-colors duration-300"
+                                whileHover={{ x: 5 }}
+                                transition={{
+                                  type: 'spring',
+                                  stiffness: 400,
+                                  damping: 10
+                                }}
+                              >
+                                {item.name}
+                              </motion.span>
+                            </a>
+                          ) : (
+                            <Link
+                              to={item.isAnchor ? '/' + item.href : item.href}
+                              onClick={item.onClick}
+                              className={`flex items-center p-4 hover:bg-white/5 rounded-xl cursor-pointer transition-all duration-300 group ${isActive ? 'bg-white/10' : ''}`}
                             >
-                              {item.name}
-                            </motion.span>
-                          </Link>
-                        )}
-                      </motion.li>
-                    ))}
+                              <motion.span
+                                className="text-white text-base font-medium group-hover:text-gray-300 transition-colors duration-300"
+                                whileHover={{ x: 5 }}
+                                transition={{
+                                  type: 'spring',
+                                  stiffness: 400,
+                                  damping: 10
+                                }}
+                              >
+                                {item.name}
+                              </motion.span>
+                            </Link>
+                          )}
+                        </motion.li>
+                      )
+                    })}
                   </ul>
                 </div>
 
@@ -440,7 +490,7 @@ function Navbar() {
                     <div className="relative">
                       <input
                         type="text"
-                        placeholder="Search products..."
+                        // placeholder="Search products..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="w-full px-4 py-3 pl-10 bg-black/50 border border-gray-700 rounded-xl text-white text-sm placeholder-gray-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"

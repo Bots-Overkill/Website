@@ -11,6 +11,13 @@ export const productCategories = [
     description: 'Explore the depths with our advanced underwater robotics',
     products: [
       {
+        id: '25',
+        title: '25',
+        imageUrl: '/Underwater/25.png',
+        videoUrl: '/home.mp4',
+        description: 'Advanced underwater exploration platform'
+      },
+      {
         id: 'alpha',
         title: 'Alpha',
         imageUrl: '/Underwater/Alpha-1536x864.png',
